@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>English Vocabulary & PDF Translator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0);
+            --glass-border: rgba(255, 255, 255, 0.19);
+            --text-primary: rgba(255, 255, 255, 0.87);
+            --text-secondary: rgba(203, 213, 225, 0.88);
+            --accent-gradient: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: url("https://server.wallpaperalchemy.com/storage/wallpapers/91/4k-black-hole-minimalistic-wallpaper.png");
+            background-size: cover;
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 28px;
+            height: 90vh;
+            max-height: 900px;
+        }
+
+        @media (max-width: 868px) {
+            body { height: auto; }
+            .container { grid-template-columns: 1fr; height: auto; }
+        }
+
+        .sidebar, .main-content, .word-card, .stat-card, .modal-content {
+            background: rgba(234, 232, 232, 0);
+            backdrop-filter: blur(4px) url(#liquid-refraction) saturate(180%);
+            -webkit-backdrop-filter: blur(4px) url(#liquid-refraction) saturate(180%);
+            border-radius: 28px;
+            border: 1px solid rgba(255, 255, 255, 0.47);
+            border-top: 1.5px solid rgba(255, 255, 255, 0.62);
+            border-left: 1.5px solid rgba(255, 255, 255, 0.35);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2), inset 0 1px 2px rgba(255, 255, 255, 0.4);
+            position: relative;
+        }
+
+        .sidebar, .main-content {
+            padding: 28px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-content {
+            overflow-y: auto;
+        }
+
+        .main-content::-webkit-scrollbar { width: 6px; }
+        .main-content::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.3); border-radius: 10px; }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 28px;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .logo-area i { color: #38bdf8; }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 28px;
+        }
+
+        .stat-card { padding: 14px; text-align: center; }
+        .stat-card h3 { font-size: 1.3rem; color: #38bdf8; }
+        .stat-card p { font-size: 0.75rem; color: var(--text-secondary); }
+
+        .nav-title {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            color: var(--text-secondary);
+            margin-bottom: 14px;
+        }
+
+        .nav-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+        .nav-item {
+            padding: 12px 18px;
+            border-radius: 18px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.95rem;
+            color: #e2e8f0;
+            border: 1px solid transparent;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .nav-item:hover, .nav-item.active {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.35);
+            color: #fff;
+            transform: translateY(-2px);
+        }
+
+        .header-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 28px;
+            flex-wrap: wrap;
+        }
+
+        .search-box { position: relative; flex: 1; min-width: 200px; }
+        .search-box input {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            padding: 14px 18px 14px 46px;
+            border-radius: 20px;
+            color: var(--text-primary);
+            outline: none;
+            font-size: 0.95rem;
+        }
+        .search-box i { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-secondary); }
+
+        .btn-group { display: flex; gap: 10px; }
+
+        .btn {
+            background: var(--accent-gradient);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            color: #fff;
+            padding: 14px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 10px 25px rgba(14, 165, 233, 0.4);
+            text-decoration: none;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+        .btn:hover { transform: translateY(-3px); box-shadow: 0 14px 30px rgba(14, 165, 233, 0.6); }
+
+        .btn-secondary { background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.3); }
+
+        .words-list { display: flex; flex-direction: column; gap: 14px; }
+        .word-card { padding: 20px 24px; display: flex; justify-content: space-between; align-items: center; transition: all 0.3s ease; }
+        .word-card:hover { background: rgba(255, 255, 255, 0.15); transform: translateY(-3px); }
+        .word-info h4 { color: #38bdf8; font-size: 1.15rem; margin-bottom: 6px; }
+        .word-info p { color: #cbd5e1; font-size: 0.92rem; }
+        .word-meta { display: flex; align-items: center; gap: 12px; }
+        .badge { background: rgba(56, 189, 248, 0.2); color: #bae6fd; padding: 6px 14px; border-radius: 12px; font-size: 0.8rem; border: 1px solid rgba(56, 189, 248, 0.4); }
+        .pdf-single-btn { background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.4); color: #38bdf8; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; }
+        .delete-btn { background: none; border: none; color: #f87171; cursor: pointer; font-size: 1.1rem; }
+
+        .translator-section { display: none; flex-direction: column; gap: 16px; }
+        .translator-section textarea {
+            width: 100%; height: 140px; background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.25); padding: 16px; border-radius: 20px; color: var(--text-primary); outline: none; resize: vertical;
+        }
+        .translation-result {
+            background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(56, 189, 248, 0.3);
+            padding: 20px; border-radius: 20px; min-height: 120px; color: #e2e8f0; line-height: 1.6; white-space: pre-wrap;
+        }
+
+        /* Modal oyna dizayni */
+        .modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.6); justify-content: center; align-items: center; z-index: 1000;
+        }
+        .modal-content { padding: 32px; width: 100%; max-width: 520px; }
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 8px; }
+        .form-group input, .form-group textarea {
+            width: 100%; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.25);
+            padding: 12px 16px; border-radius: 16px; color: var(--text-primary); outline: none;
+        }
+        .modal-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px; }
+
+        /* AI Chat Oynasi Stili */
+        .chat-box { height: 280px; overflow-y: auto; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.2); border-radius: 16px; padding: 12px; display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; }
+        .chat-msg { padding: 10px 14px; border-radius: 14px; max-width: 80%; font-size: 0.9rem; line-height: 1.4; }
+        .chat-msg.user { background: rgba(14, 165, 233, 0.3); align-self: flex-end; border: 1px solid rgba(14,165,233,0.5); }
+        .chat-msg.ai { background: rgba(255, 255, 255, 0.1); align-self: flex-start; border: 1px solid rgba(255,255,255,0.2); }
+    </style>
+</head>
+<body>
+
+<svg style="display: none;">
+    <filter id="liquid-refraction">
+        <feTurbulence type="fractalNoise" baseFrequency="0.012" numOctaves="3" result="noise"/>
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="15" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+</svg>
+
+<div class="container">
+    <aside class="sidebar">
+        <div class="logo-area">
+            <i class="fa-solid fa-droplet"></i>
+            <span>Inglizcha Lug'at</span>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3 id="totalWordsCount">{{ words | length }}</h3>
+                <p>SO'Z</p>
+            </div>
+            <div class="stat-card">
+                <h3>AI</h3>
+                <p>SMART</p>
+            </div>
+        </div>
+
+        <div class="nav-title">Bo'limlar</div>
+        <ul class="nav-list">
+            <li class="nav-item active" onclick="switchSection('words', 'Hammasi', this)"><i class="fa-solid fa-border-all"></i> Hammasi</li>
+            <li class="nav-item" onclick="switchSection('words', 'Vocabulary', this)"><i class="fa-solid fa-book"></i> Vocabulary</li>
+            <li class="nav-item" onclick="switchSection('words', 'Speaking', this)"><i class="fa-solid fa-comments"></i> Speaking</li>
+            <li class="nav-item" onclick="switchSection('words', 'Grammar', this)"><i class="fa-solid fa-spell-check"></i> Grammar</li>
+            <li class="nav-item" onclick="switchSection('words', 'Idioms & Phrases', this)"><i class="fa-solid fa-quote-left"></i> Idioms & Phrases</li>
+            <li class="nav-item" style="margin-top: 15px; background: rgba(14, 165, 233, 0.2); border-color: rgba(56, 189, 248, 0.4);" onclick="switchSection('translator', '', this)">
+                <i class="fa-solid fa-language" style="color: #38bdf8;"></i> <b>Kitob Tarjimoni</b>
+            </li>
+        </ul>
+    </aside>
+
+    <main class="main-content">
+        <!-- Lug'at bo'limi -->
+        <div id="wordsView">
+            <div class="header-controls">
+                <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="searchInput" placeholder="So'z qidirish..." oninput="searchWords()">
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-secondary" onclick="openChatModal()">
+                        <i class="fa-solid fa-robot"></i> AI bilan Suhbat
+                    </button>
+                    <button class="btn" onclick="openModal()">
+                        <i class="fa-solid fa-plus"></i> Qo'shish
+                    </button>
+                </div>
+            </div>
+
+            <div class="words-list" id="wordsContainer">
+                {% for item in words %}
+                <div class="word-card" data-category="{{ item.category }}">
+                    <div class="word-info">
+                        <h4>{{ item.term }}</h4>
+                        <p>{{ item.definition }}</p>
+                    </div>
+                    <div class="word-meta">
+                        <span class="badge">{{ item.category }}</span>
+                        <a href="/api/export-word-pdf/{{ item.id }}" class="pdf-single-btn" title="Alohida PDF yuklash">
+                            <i class="fa-solid fa-file-arrow-down"></i>
+                        </a>
+                        <button class="delete-btn" onclick="deleteWord('{{ item.id }}')">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Kitob va PDF Tarjimoni Bo'limi -->
+        <div id="translatorView" class="translator-section">
+            <h2 style="color: #38bdf8;"><i class="fa-solid fa-file-pdf"></i> Inglizcha PDF Kitobni Tarjima Qilish</h2>
+            <p style="color: var(--text-secondary); font-size: 0.9rem;">Inglizcha PDF faylingizni yuklang. Tizim uni o'zbek tiliga tarjima qilib, yangi PDF formatida yuklab beradi.</p>
+
+            <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 10px; flex-wrap: wrap;">
+                <input type="file" id="pdfFileInput" accept=".pdf" style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 12px; color: #fff; border: 1px solid rgba(255,255,255,0.2);">
+                <button type="button" class="btn" onclick="uploadAndTranslatePDF()">
+                    <i class="fa-solid fa-file-export"></i> PDF ni Tarjima Qilish va Yuklab Olish
+                </button>
+            </div>
+            <div id="pdfStatus" style="color: #38bdf8; font-size: 0.9rem; margin-bottom: 15px;"></div>
+
+            <hr style="border-color: rgba(255,255,255,0.1); margin: 5px 0;">
+
+            <h2 style="color: #38bdf8;"><i class="fa-solid fa-book-open"></i> Matnli Kitob Parchasini Tarjima Qilish</h2>
+            <textarea id="bookText" placeholder="Inglizcha kitob matnini shu yerga nusxalab tashlang..."></textarea>
+            <button class="btn" onclick="translateBookText()">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> AI Orqali O'zbekchaga Tarjima Qilish
+            </button>
+            <h3 style="margin-top: 15px; color: #38bdf8;">Tarjima Natijasi:</h3>
+            <div id="translationOutput" class="translation-result">
+                Tarjima natijasi shu yerda paydo bo'ladi...
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- So'z qo'shish Modal oynasi -->
+<div class="modal" id="wordModal">
+    <div class="modal-content">
+        <h3>Yangi So'z Qo'shish</h3>
+        <div class="form-group">
+            <label>Inglizcha So'z</label>
+            <input type="text" id="newTerm" placeholder="Masalan: Refraction">
+        </div>
+        <div class="form-group">
+            <label>Bo'lim / Mavzu</label>
+            <input type="text" id="newCategory" placeholder="Masalan: Vocabulary">
+        </div>
+        <div class="form-group">
+            <label>Ma'nosi va To'liq Izohi (AI orqali)</label>
+            <textarea id="newDefinition" placeholder="Tarjimasi, misollar va qoidalar..."></textarea>
+        </div>
+        <div class="modal-actions">
+            <button class="btn btn-secondary" onclick="aiFillDefinition()"><i class="fa-solid fa-wand-magic-sparkles"></i> AI To'ldirish</button>
+            <button class="btn btn-secondary" onclick="closeModal()">Bekor qilish</button>
+            <button class="btn" onclick="saveWord()">Saqlash</button>
+        </div>
+    </div>
+</div>
+
+<!-- AI Chat Modal Oynasi -->
+<div class="modal" id="chatModal">
+    <div class="modal-content" style="max-width: 600px;">
+        <h3 style="margin-bottom: 15px; color: #38bdf8;"><i class="fa-solid fa-robot"></i> Gemini AI bilan Suhbat</h3>
+        <div class="chat-box" id="chatBox">
+            <div class="chat-msg ai">Salom! Men sizning yordamchingizman. Ingliz tili yoki darslar bo'yicha istalgan savolingizni berishingiz mumkin.</div>
+        </div>
+        <div style="display: flex; gap: 10px;">
+            <input type="text" id="chatInput" placeholder="Savol yoki xabaringizni yozing..." style="flex:1; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.25); padding: 12px; border-radius: 16px; color: #fff; outline: none;" onkeypress="if(event.key === 'Enter') sendChatMessage()">
+            <button class="btn" onclick="sendChatMessage()"><i class="fa-solid fa-paper-plane"></i></button>
+        </div>
+        <div class="modal-actions" style="margin-top: 15px;">
+            <button class="btn btn-secondary" onclick="closeChatModal()">Yopish</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openModal() { document.getElementById('wordModal').style.display = 'flex'; }
+    function closeModal() { document.getElementById('wordModal').style.display = 'none'; }
+
+    function openChatModal() { document.getElementById('chatModal').style.display = 'flex'; }
+    function closeChatModal() { document.getElementById('chatModal').style.display = 'none'; }
+
+    function switchSection(view, category, element) {
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+        element.classList.add('active');
+
+        if (view === 'words') {
+            document.getElementById('wordsView').style.display = 'block';
+            document.getElementById('translatorView').style.display = 'none';
+            filterCategory(category);
+        } else if (view === 'translator') {
+            document.getElementById('wordsView').style.display = 'none';
+            document.getElementById('translatorView').style.display = 'flex';
+        }
+    }
+
+    function filterCategory(category) {
+        document.querySelectorAll('.word-card').forEach(card => {
+            if (category === 'Hammasi' || card.dataset.category === category) {
+                card.style.display = 'flex';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+
+    async function sendChatMessage() {
+        const input = document.getElementById('chatInput');
+        const chatBox = document.getElementById('chatBox');
+        const msg = input.value.trim();
+        if (!msg) return;
+
+        chatBox.innerHTML += `<div class="chat-msg user">${msg}</div>`;
+        input.value = '';
+        chatBox.scrollTop = chatBox.scrollHeight;
+
+        try {
+            const res = await fetch('/api/chat', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({message: msg})
+            });
+            const data = await res.json();
+            const reply = data.reply || "Javob olishda xatolik yuz berdi.";
+            chatBox.innerHTML += `<div class="chat-msg ai">${reply}</div>`;
+            chatBox.scrollTop = chatBox.scrollHeight;
+        } catch (e) {
+            chatBox.innerHTML += `<div class="chat-msg ai">Server bilan aloqa uzildi.</div>`;
+        }
+    }
+
+    async function uploadAndTranslatePDF() {
+        const fileInput = document.getElementById('pdfFileInput');
+        const statusDiv = document.getElementById('pdfStatus');
+
+        if (!fileInput.files[0]) {
+            alert("Iltimos, avval PDF faylni tanlang!");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('pdf_file', fileInput.files[0]);
+        statusDiv.innerText = "PDF o'qilmoqda va AI orqali tarjima qilinmoqda, kutib turing...";
+
+        try {
+            const response = await fetch('/api/translate-pdf', { method: 'POST', body: formData });
+            if (response.ok) {
+                const blob = await response.blob();
+                const downloadUrl = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = downloadUrl;
+                a.download = `uzbek_${fileInput.files[0].name}`;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                statusDiv.innerText = "Tarjima muvaffaqiyatli yakunlandi va fayl yuklab olindi!";
+            } else {
+                const errData = await response.json();
+                statusDiv.innerText = "Xatolik: " + (errData.error || "Tarjimada xatolik yuz berdi");
+            }
+        } catch (e) {
+            statusDiv.innerText = "Server bilan aloqada xatolik yuz berdi.";
+        }
+    }
+
+    async function translateBookText() {
+        const text = document.getElementById('bookText').value;
+        const output = document.getElementById('translationOutput');
+        if (!text.trim()) { alert("Iltimos, avval inglizcha kitob matnini kiriting!"); return; }
+
+        output.innerText = "AI matnni o'zbek tiliga tarjima qilmoqda, kuting...";
+        try {
+            const res = await fetch('/api/translate-book', {
+                method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({text})
+            });
+            const data = await res.json();
+            output.innerText = data.translation || "Tarjimada xatolik yuz berdi.";
+        } catch (e) {
+            output.innerText = "Xatolik: Server bilan aloqa o'rnatib bo'lmadi.";
+        }
+    }
+
+    async function aiFillDefinition() {
+        const term = document.getElementById('newTerm').value;
+        if (!term) { alert("Avval so'zni kiriting!"); return; }
+        try {
+            const res = await fetch('/api/ai-define', {
+                method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({term})
+            });
+            const data = await res.json();
+            if (data.definition) document.getElementById('newDefinition').value = data.definition;
+        } catch (e) { alert("AI xizmati bilan xatolik yuz berdi"); }
+    }
+
+    async function saveWord() {
+        const term = document.getElementById('newTerm').value;
+        const category = document.getElementById('newCategory').value || 'Vocabulary';
+        const definition = document.getElementById('newDefinition').value;
+
+        if (!term || !definition) { alert("Barcha maydonlarni to'ldiring!"); return; }
+
+        const res = await fetch('/api/words', {
+            method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({term, category, definition})
+        });
+        const data = await res.json();
+        if (data.success) location.reload();
+    }
+
+    async function deleteWord(id) {
+        if (!confirm("O'chirishni tasdiqlaysizmi?")) return;
+        const res = await fetch(`/api/words/${id}`, {method: 'DELETE'});
+        const data = await res.json();
+        if (data.success) location.reload();
+    }
+
+    function searchWords() {
+        const query = document.getElementById('searchInput').value.toLowerCase();
+        document.querySelectorAll('.word-card').forEach(card => {
+            const text = card.innerText.toLowerCase();
+            card.style.display = text.includes(query) ? 'flex' : 'none';
+        });
+    }
+</script>
+</body>
+</html>
